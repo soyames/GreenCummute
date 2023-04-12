@@ -1,0 +1,7 @@
+{
+  "name": "GreenCummute",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
