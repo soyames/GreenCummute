@@ -1,0 +1,139 @@
+ion-content{
+    --ion-background-color:#d3e2fd;
+}
+
+ion-header{
+    position: absolute;
+}
+
+ion-toolbar{
+    --ion-background-color:transparent;
+    --opacity:0;
+}
+ion-card{
+    --ion-background-color: transparent;
+    box-shadow: none !important;
+}
+
+ion-card-header{
+    text-align: center;
+}
+
+ion-card-title{
+    margin-top: 30px;
+    font-size: 30px;
+    color: #080808;
+    text-align: center;
+    font-weight: 600;
+}
+
+ion-card-subtitle{
+    padding-top: 15px;
+    font-size: 12px;
+    color: #898585;
+    text-align: center;
+    font-weight: 300;
+}
+
+.wrapform{
+    margin-top: 15px;
+    }
+
+ion-item{
+    color: #74787e;
+    font-size: 14px;
+    --border-color:#d4d7db;
+    --highglight-color-focus: #1248A0;
+    --padding-start:0;
+    --inner-padding-end:0;
+    ion-input{
+        color: #647b9d;
+    }
+
+    ion-icon{
+        padding-right: 6px;
+        font-size: 18px;
+    }
+
+    ion-input:hover{
+        color:  #1248A0
+    }
+}
+
+ion-item:active{
+    color: red !important;
+    ion-icon{
+        color: red !important;
+    }
+}
+
+ion-card-footer{
+    width: 100%;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    text-align: center;
+    padding-top: 40px;
+
+    span{
+        color: #85888d;
+        font-size: 12px;
+        font-weight: 200;
+    }
+
+    button{
+        background-color: transparent;
+        font-size: 14px;
+        font-weight: 400;
+        padding-left: 3px;
+        color: #535358;
+    }
+
+    button:hover{
+        color: #969393;
+    }
+}
+
+.pwdforgot{
+    text-align: right;
+    ion-button{
+        font-size: 12px;
+    }
+}
+
+.text-tag{
+    margin-top:30px;
+    text-align:center ;
+    span{
+        font-size: 13px;
+        font-weight: normal;
+        color: #898585;
+    }
+}
+
+.sign-btn-wrap{
+    text-align: center;
+    padding-top: 20px;
+    .sign-btn{
+        --ion-color-primary: #215AB7;
+        --background-color-activated:#e1eaf9;
+        --background-color-focus:#e1eaf9;
+        --background-color-hover:#647b9d;
+        border-radius: 25px;
+        --background:#2154b7;
+        background-color: #2154b7;
+        color: #f4f6fa;
+}
+
+}
+
+
+.social-btns{
+    margin-top: 20px;
+    text-align: center;
+    --ion-button{
+        width: 30px;
+        padding-left: 5px !important;
+    }
+}

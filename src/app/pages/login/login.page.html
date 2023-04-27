@@ -1,0 +1,39 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="ion-no-margin">
+      <ion-img src="assets/images/header.png"></ion-img>
+      <ion-card-header>
+          <ion-card-title>
+            Welcome
+          </ion-card-title>
+            <ion-card-subtitle>
+              This app is a government subsidized platform to empower
+               green life choices— and it’s all about sustainability
+            </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="signin-btns">
+          <ion-button size="small" fill="solid" shape="round" class="loginbtn" (click)="gotoLoginpage()">Login</ion-button>
+          <ion-button size="small" fill="outline" shape="round" color="dark" (click)="gotoRegisterpage()" >Register</ion-button>
+        </div>
+        <div class="text-tag">
+          <span> or register with</span>
+        </div>
+        <div class="social-btns">
+          <ion-button fill="clear" shape="round" class="fcbbtn ion-no-padding">
+            <ion-img src="assets/images/facebook.png"></ion-img>
+          </ion-button>
+          <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding">
+             <ion-img src="assets/images/google.png"></ion-img>
+          </ion-button>
+          <ion-button fill="clear" shape="round" class="applebtn ion-no-padding">
+             <ion-img src="assets/images/apple.png"></ion-img>
+         </ion-button>
+        </div>
+      </ion-card-content>
+  </ion-card>
+</ion-content>
