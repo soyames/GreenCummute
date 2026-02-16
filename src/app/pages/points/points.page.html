@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>My Points</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshPoints($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Points Balance Card -->
+  <ion-card class="balance-card">
+    <ion-card-content>
+      <div class="balance-container">
+        <ion-icon name="leaf" color="success" class="balance-icon"></ion-icon>
+        <div class="balance-info">
+          <p class="balance-label">Total Points</p>
+          <h1 class="balance-amount">{{ currentPoints }}</h1>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Quick Stats -->
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <p class="stat-label">This Week</p>
+            <h2 class="stat-value">+{{ thisWeek }}</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <p class="stat-label">This Month</p>
+            <h2 class="stat-value">+{{ thisMonth }}</h2>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Action Buttons -->
+  <ion-card>
+    <ion-card-content>
+      <ion-button expand="block" (click)="goToPartners()" color="primary">
+        <ion-icon slot="start" name="gift"></ion-icon>
+        Redeem Points
+      </ion-button>
+      <ion-button expand="block" (click)="goToLeaderboard()" fill="outline" color="primary">
+        <ion-icon slot="start" name="trophy"></ion-icon>
+        View Leaderboard
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Segment Control -->
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="balance">
+      <ion-label>Overview</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="history">
+      <ion-label>History</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Overview Content -->
+  <div *ngIf="selectedSegment === 'balance'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Points Summary</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-icon slot="start" name="trending-up" color="success"></ion-icon>
+            <ion-label>
+              <h3>Total Earned</h3>
+              <p>All-time points earned</p>
+            </ion-label>
+            <ion-note slot="end" color="success">{{ totalEarned }}</ion-note>
+          </ion-item>
+          <ion-item>
+            <ion-icon slot="start" name="trending-down" color="warning"></ion-icon>
+            <ion-label>
+              <h3>Total Redeemed</h3>
+              <p>Points spent on rewards</p>
+            </ion-label>
+            <ion-note slot="end" color="warning">{{ totalSpent }}</ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- History Content -->
+  <div *ngIf="selectedSegment === 'history'">
+    <ion-list *ngIf="transactions.length > 0" lines="full">
+      <ion-item *ngFor="let transaction of transactions">
+        <ion-icon 
+          slot="start" 
+          [name]="getTransactionIcon(transaction.type)"
+          [color]="getTransactionColor(transaction.type)">
+        </ion-icon>
+        <ion-label>
+          <h3>{{ transaction.reason }}</h3>
+          <p>{{ formatDate(transaction.timestamp) }}</p>
+        </ion-label>
+        <ion-note slot="end" [color]="getTransactionColor(transaction.type)">
+          {{ transaction.type === 'earn' ? '+' : '-' }}{{ transaction.amount }}
+        </ion-note>
+      </ion-item>
+    </ion-list>
+
+    <!-- Empty State -->
+    <div *ngIf="transactions.length === 0 && !isLoading" class="empty-state">
+      <ion-icon name="document-text-outline" size="large"></ion-icon>
+      <p>No transaction history yet</p>
+      <ion-button (click)="goToNavigation()" fill="outline">
+        Start Earning Points
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner></ion-spinner>
+  </div>
+</ion-content>

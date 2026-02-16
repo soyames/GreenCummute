@@ -10,43 +10,61 @@
   <ion-card class="ion-no-margin">
       <ion-img src="assets/images/header1.png"></ion-img>
       <ion-card-content>
-        <div class="wrapform">
-          <ion-item>
-            <ion-input type="text" name="email"placeholder="youremail@domain.com" required>
-              <ion-icon name="mail-outline"></ion-icon>
-            </ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input type="password" name="email" placeholder="....." required>
-              <ion-icon name="lock-outline"></ion-icon>
-            </ion-input>
-          </ion-item>
-        </div>
-        <div class="pwdforgot">
-          <ion-button fill="clear" class="ion-no-padding">Forgot password?</ion-button>
-        </div>
-        <div class="sign-btn-wrap">
-          <ion-button fill="clear" shape="round" class="sign-btn" (click)="homePager()">Login</ion-button>
-        </div>
+        <form [formGroup]="loginForm" (ngSubmit)="loginWithEmail()">
+          <div class="wrapform">
+            <ion-item>
+              <ion-input 
+                type="email" 
+                formControlName="email"
+                placeholder="youremail@domain.com" 
+                required>
+                <ion-icon name="mail-outline"></ion-icon>
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input 
+                type="password" 
+                formControlName="password" 
+                placeholder="....." 
+                required>
+                <ion-icon name="lock-outline"></ion-icon>
+              </ion-input>
+            </ion-item>
+          </div>
+          <div class="pwdforgot">
+            <ion-button fill="clear" class="ion-no-padding" (click)="forgotPassword()">Forgot password?</ion-button>
+          </div>
+          <div class="sign-btn-wrap">
+            <ion-button 
+              type="submit" 
+              fill="clear" 
+              shape="round" 
+              class="sign-btn"
+              [disabled]="loginForm.invalid || isLoading">
+              Login
+            </ion-button>
+          </div>
+        </form>
         <div class="text-tag">
           <span> or Login with</span>
         </div>
         <div class="social-btns">
-          <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding">
+          <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="loginWithFacebook()">
             <ion-img src="assets/images/facebook.png"></ion-img>
           </ion-button>
-            <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding">
-              <ion-img src="assets/images/google.png"></ion-img>
-            </ion-button>
-            <ion-button fill="clear" shape="round" class="applebtn ion-no-padding">
-              <ion-img src="assets/images/apple.png"></ion-img>
-            </ion-button>
-            <div class="ion-card-footer">
-              <span>Don't have an account?</span><button class="ion-no-padding">Register</button>
-            </div>
+          <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="loginWithGoogle()">
+            <ion-img src="assets/images/google.png"></ion-img>
+          </ion-button>
+          <ion-button fill="clear" shape="round" class="applebtn ion-no-padding" (click)="loginWithApple()">
+            <ion-img src="assets/images/apple.png"></ion-img>
+          </ion-button>
+          <div class="ion-card-footer">
+            <span>Don't have an account?</span><button class="ion-no-padding" (click)="goToRegister()">Register</button>
+          </div>
         </div>
       </ion-card-content>
-      
   </ion-card>
-
+  
+  <!-- Data Storage Disclaimer -->
+  <app-data-disclaimer [showFullDisclaimer]="false" position="bottom"></app-data-disclaimer>
 </ion-content>

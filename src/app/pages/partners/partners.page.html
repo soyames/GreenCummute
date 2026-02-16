@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Partners</ion-title>
+    <ion-buttons slot="end">
+      <ion-chip color="success">
+        <ion-icon name="leaf"></ion-icon>
+        <ion-label>{{ userPoints }}</ion-label>
+      </ion-chip>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="partners">
+      <ion-label>Offers</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="redemptions">
+      <ion-label>My Redemptions</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="selectedSegment === 'partners'">
+    <ion-toolbar>
+      <ion-segment [(ngModel)]="selectedCategory" scrollable="true">
+        <ion-segment-button *ngFor="let cat of categories" [value]="cat.value">
+          <ion-icon [name]="cat.icon"></ion-icon>
+          <ion-label>{{ cat.label }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+
+    <div *ngFor="let partner of filteredPartners">
+      <ion-card>
+        <ion-card-header>
+          <div class="partner-header">
+            <img [src]="partner.logo" [alt]="partner.name" class="partner-logo">
+            <div>
+              <ion-card-title>{{ partner.name }}</ion-card-title>
+              <ion-card-subtitle>{{ partner.description }}</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item *ngFor="let offer of partner.offers" [disabled]="!canAfford(offer.pointsCost)">
+              <ion-label>
+                <h3>{{ offer.title }}</h3>
+                <p>{{ offer.description }}</p>
+                <p class="offer-details">
+                  <ion-badge [color]="canAfford(offer.pointsCost) ? 'primary' : 'medium'">
+                    {{ offer.pointsCost }} points
+                  </ion-badge>
+                  <span class="discount">
+                    {{ offer.discountType === 'percentage' ? offer.discountValue + '%' : '$' + offer.discountValue }} OFF
+                  </span>
+                </p>
+              </ion-label>
+              <ion-button 
+                slot="end" 
+                (click)="redeemOffer(offer)"
+                [disabled]="!canAfford(offer.pointsCost)">
+                Redeem
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <ion-card *ngIf="filteredPartners.length === 0 && !isLoading">
+      <ion-card-content>
+        <div class="empty-state">
+          <ion-icon name="business-outline" color="medium"></ion-icon>
+          <p>No partners available</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="selectedSegment === 'redemptions'">
+    <ion-list *ngIf="redemptions.length > 0">
+      <ion-item *ngFor="let redemption of redemptions">
+        <ion-icon 
+          [name]="getRedemptionStatus(redemption.status).icon" 
+          [color]="getRedemptionStatus(redemption.status).color"
+          slot="start">
+        </ion-icon>
+        <ion-label>
+          <h3>{{ redemption.code }}</h3>
+          <p>Redeemed: {{ redemption.redeemedAt | date:'short' }}</p>
+          <p *ngIf="redemption.status === 'active'">Expires: {{ redemption.expiresAt | date:'short' }}</p>
+          <ion-badge [color]="getRedemptionStatus(redemption.status).color">
+            {{ redemption.status }}
+          </ion-badge>
+        </ion-label>
+        <ion-note slot="end">-{{ redemption.pointsSpent }} pts</ion-note>
+      </ion-item>
+    </ion-list>
+
+    <ion-card *ngIf="redemptions.length === 0 && !isLoading">
+      <ion-card-content>
+        <div class="empty-state">
+          <ion-icon name="ticket-outline" color="medium"></ion-icon>
+          <p>No redemptions yet</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadData()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content>

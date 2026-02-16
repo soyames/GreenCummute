@@ -1,129 +1,188 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { NavController, ToastController } from '@ionic/angular';
-import 'firebase/auth';
-import { FacebookAuthProvider, GoogleAuthProvider } from 'firebase/auth';
-
-
+import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
+import { DataDisclaimerComponent } from '../../components/data-disclaimer/data-disclaimer.component';
 
 @Component({
   selector: 'app-registration',
   templateUrl: './registration.page.html',
   styleUrls: ['./registration.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, DataDisclaimerComponent]
 })
 export class RegistrationPage implements OnInit {
-  afAuth: any;
+  registrationForm: FormGroup;
+  selectedFile: File | null = null;
+  isLoading = false;
 
-  constructor(/*public navCtrl: NavController,public toastCtrl: ToastController, private http: HttpClient*/private Router: Router) { }
-
-  ngOnInit() {
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private userService: UserService,
+    private toastController: ToastController,
+    private loadingController: LoadingController
+  ) {
+    this.registrationForm = this.formBuilder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      city: [''],
+      occupation: [''],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: [''],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, { validators: this.passwordMatchValidator });
   }
-  
+
+  ngOnInit() {}
+
+  passwordMatchValidator(group: FormGroup) {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  handleFileInput(event: any) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      this.selectedFile = files[0];
+    }
+  }
+
   async createUser() {
-
-    this.Router.navigateByUrl('registration')
-    // get the form data from the inputs
-    /*
-    const firstName = (document.querySelector('#firstName') as HTMLInputElement).value;
-    const lastName = (document.querySelector('#lastName') as HTMLInputElement).value;
-    const city = (document.querySelector('#city') as HTMLInputElement).value;
-    const occupation = (document.querySelector('#occupation') as HTMLInputElement).value;
-    const email = (document.querySelector('#email') as HTMLInputElement).value;
-    const phoneNumber = (document.querySelector('#phoneNumber') as HTMLInputElement).value;
-  
-    // get the selected file
-    const fileInput = document.querySelector('#profilePicture') as HTMLInputElement;
-    const file = fileInput.files && fileInput.files.length > 0 ? fileInput.files[0] : null;
-    if (!file) {
-      const toast = await this.toastCtrl.create({
-        message: 'Please select a profile picture.',
-        duration: 3000
-      });
-      toast.present();
+    if (this.registrationForm.invalid) {
+      await this.showToast('Please fill all required fields correctly');
       return;
     }
 
-// Do something with the selected file
+    const loading = await this.loadingController.create({
+      message: 'Creating your account...'
+    });
+    await loading.present();
 
-    // perform validation on the form data and file
-    if (!firstName || !lastName || !city || !occupation || !email || !phoneNumber || !file) {
-      const toast = await this.toastCtrl.create({
-        message: 'Please fill all the fields and select a profile picture.',
-        duration: 3000
+    try {
+      const formValue = this.registrationForm.value;
+      
+      // Create auth account
+      const credential = await this.authService.registerWithEmail(
+        formValue.email,
+        formValue.password
+      );
+
+      // Create user profile
+      await this.userService.createUserProfile(credential.user.uid, credential.user.email!, {
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        displayName: `${formValue.firstName} ${formValue.lastName}`,
+        city: formValue.city,
+        occupation: formValue.occupation,
+        phoneNumber: formValue.phoneNumber
       });
-      toast.present();
-      return;
+
+      // Upload avatar if selected
+      if (this.selectedFile) {
+        await this.userService.uploadAvatar(credential.user.uid, this.selectedFile);
+      }
+
+      await loading.dismiss();
+      await this.showToast('Account created successfully!', 'success');
+      this.router.navigateByUrl('tabs/home');
+    } catch (error: any) {
+      await loading.dismiss();
+      await this.showToast(error.message, 'danger');
     }
-  
-    // prepare the form data to be sent to the server
-    /*const formData = new FormData();
-    formData.append('firstName', firstName);
-    formData.append('lastName', lastName);
-    formData.append('city', city);
-    formData.append('occupation', occupation);
-    formData.append('email', email);
-    formData.append('phoneNumber', phoneNumber);
-    formData.append('profilePicture', file);*/
-
-     // prepare the request data
-  /*const requestData = {
-    firstName,
-    lastName,
-    city,
-    occupation,
-    email,
-    phoneNumber
-  };
-
-*/
-    // sign in with Google
- /* const googleProvider = new firebase.auth.GoogleAuthProvider();
-  const googleCredential = await this.afAuth.signInWithPopup(googleProvider);
-  console.log(googleCredential);
-
-  // sign in with Facebook
-  const facebookProvider = new firebase.auth.FacebookAuthProvider();
-  const facebookCredential = await this.afAuth.signInWithPopup(facebookProvider);
-  console.log(facebookCredential);
-
-  // sign in with Apple
-  const appleProvider = new firebase.auth.OAuthProvider('apple.com');
-  const appleCredential = await this.afAuth.signInWithPopup(appleProvider);
-  console.log(appleCredential);
-*/
-  
-
-
-    // make an HTTP POST request to your backend API
-    //this.http.post('https://my-backend-api.com/register', requestData /*formData*/).subscribe(response => {
-      // handle the response from the backend
-     // console.log(response);
-  
-      // navigate to the login page
-     // this.navCtrl.navigateRoot('/login');
-    //}, async error => {
-      // handle any errors from the backend
-     // console.error(error);
-  
-      // display a toast message to the user
-      //const toast = this.toastCtrl.create({
-      //  message: 'An error occurred. Please try again later.',
-      //  duration: 3000
-     // });
-      //(await toast).present();
-   // });
   }
-/*
-  navigateToGoogleLogin() {
-    this.Router.navigate(['/google-login']);
+
+  async registerWithGoogle() {
+    const loading = await this.loadingController.create({
+      message: 'Signing up with Google...'
+    });
+    await loading.present();
+
+    try {
+      const credential = await this.authService.loginWithGoogle();
+      
+      // Create user profile
+      await this.userService.createUserProfile(credential.user.uid, credential.user.email!, {
+        displayName: credential.user.displayName || '',
+        photoURL: credential.user.photoURL || ''
+      });
+      
+      await loading.dismiss();
+      await this.showToast('Account created successfully!', 'success');
+      this.router.navigateByUrl('tabs/home');
+    } catch (error: any) {
+      await loading.dismiss();
+      if (!error.message.includes('closed')) {
+        await this.showToast(error.message, 'danger');
+      }
+    }
   }
-  */
 
+  async registerWithFacebook() {
+    const loading = await this.loadingController.create({
+      message: 'Signing up with Facebook...'
+    });
+    await loading.present();
 
+    try {
+      const credential = await this.authService.loginWithFacebook();
+      
+      // Create user profile
+      await this.userService.createUserProfile(credential.user.uid, credential.user.email!, {
+        displayName: credential.user.displayName || '',
+        photoURL: credential.user.photoURL || ''
+      });
+      
+      await loading.dismiss();
+      await this.showToast('Account created successfully!', 'success');
+      this.router.navigateByUrl('tabs/home');
+    } catch (error: any) {
+      await loading.dismiss();
+      if (!error.message.includes('closed')) {
+        await this.showToast(error.message, 'danger');
+      }
+    }
+  }
+
+  async registerWithApple() {
+    const loading = await this.loadingController.create({
+      message: 'Signing up with Apple...'
+    });
+    await loading.present();
+
+    try {
+      const credential = await this.authService.loginWithApple();
+      
+      // Create user profile
+      await this.userService.createUserProfile(credential.user.uid, credential.user.email!, {
+        displayName: credential.user.displayName || '',
+        photoURL: credential.user.photoURL || ''
+      });
+      
+      await loading.dismiss();
+      await this.showToast('Account created successfully!', 'success');
+      this.router.navigateByUrl('tabs/home');
+    } catch (error: any) {
+      await loading.dismiss();
+      if (!error.message.includes('closed')) {
+        await this.showToast(error.message, 'danger');
+      }
+    }
+  }
+
+  private async showToast(message: string, color: string = 'dark') {
+    const toast = await this.toastController.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
 }

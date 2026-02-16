@@ -1,8 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaulthref="login" text=""></ion-back-button>
-
+      <ion-back-button defaulthref="loginscreen" text=""></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -19,13 +18,26 @@
     </ion-card-header>
   </ion-card>
   <ion-card-content>
-        <ion-item>
-          <ion-input label="Email: " type="email" >
-            <ion-icon name="mail-outline"></ion-icon>
-          </ion-input>
-        </ion-item>
-        <div>
-          <ion-button size="small" fill="solid" shape="round">Reset</ion-button>
-        </div>
+    <form [formGroup]="resetForm" (ngSubmit)="resetPassword()">
+      <ion-item>
+        <ion-input 
+          formControlName="email" 
+          label="Email: " 
+          type="email" 
+          required>
+          <ion-icon name="mail-outline"></ion-icon>
+        </ion-input>
+      </ion-item>
+      <div>
+        <ion-button 
+          type="submit" 
+          size="small" 
+          fill="solid" 
+          shape="round"
+          [disabled]="resetForm.invalid || isLoading">
+          Reset
+        </ion-button>
+      </div>
+    </form>
   </ion-card-content>
 </ion-content>

@@ -1,0 +1,45 @@
+.disclaimer-card {
+  margin: 16px 0;
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+.disclaimer-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  
+  ion-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  
+  .disclaimer-text {
+    flex: 1;
+    
+    h4 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      color: var(--ion-color-primary);
+    }
+    
+    p {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      
+      strong {
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      font-size: 13px;
+      
+      li {
+        margin-bottom: 4px;
+      }
+    }
+  }
+}

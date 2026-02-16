@@ -1,0 +1,30 @@
+<ion-card *ngIf="showDisclaimer" class="disclaimer-card">
+  <ion-card-content>
+    <div class="disclaimer-content">
+      <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+      <div class="disclaimer-text">
+        <h4 *ngIf="showFullDisclaimer">Data Storage Notice</h4>
+        <p *ngIf="showFullDisclaimer">
+          <strong>Your data is stored locally on your device.</strong> 
+          This app uses local storage for your profile, photos, routes, and preferences. 
+          Your data is private and stays on your device. Please note:
+        </p>
+        <ul *ngIf="showFullDisclaimer">
+          <li>Data may be lost if you clear browser data or uninstall the app</li>
+          <li>Photos and avatars are stored as compressed images on your device</li>
+          <li>Backup your important data regularly</li>
+          <li>Points and favorites are synced to Firestore when online</li>
+        </ul>
+        <p *ngIf="!showFullDisclaimer">
+          <strong>Local Storage:</strong> Your photos and data are stored on this device only.
+        </p>
+      </div>
+      <ion-button 
+        fill="clear" 
+        size="small" 
+        (click)="dismissDisclaimer()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-card-content>
+</ion-card>

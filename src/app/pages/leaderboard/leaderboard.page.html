@@ -1,0 +1,73 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="userRank" class="user-rank-card">
+    <ion-card-content>
+      <div class="user-rank">
+        <ion-avatar>
+          <img [src]="userRank.avatarUrl || 'assets/images/default-avatar.png'" alt="Your avatar">
+        </ion-avatar>
+        <div class="rank-info">
+          <h3>Your Rank</h3>
+          <div class="rank-details">
+            <ion-badge [color]="getRankColor(userRank.rank)" class="rank-badge">
+              #{{ userRank.rank }}
+            </ion-badge>
+            <span class="points">{{ userRank.points }} points</span>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-segment [(ngModel)]="timeframe" (ionChange)="onTimeframeChange($event)">
+    <ion-segment-button value="week">
+      <ion-label>Week</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="month">
+      <ion-label>Month</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="alltime">
+      <ion-label>All Time</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list>
+    <ion-item *ngFor="let entry of leaderboard" [color]="isCurrentUser(entry.userId) ? 'light' : ''">
+      <ion-avatar slot="start">
+        <img [src]="entry.avatarUrl || 'assets/images/default-avatar.png'" [alt]="entry.displayName">
+      </ion-avatar>
+      <ion-label>
+        <h2>
+          {{ entry.displayName }}
+          <ion-badge *ngIf="isCurrentUser(entry.userId)" color="primary">You</ion-badge>
+        </h2>
+        <p>{{ entry.totalCO2Saved }}g CO2 saved • {{ (entry.totalDistance / 1000).toFixed(1) }}km</p>
+      </ion-label>
+      <div slot="end" class="rank-display">
+        <ion-icon [name]="getRankIcon(entry.rank)" [color]="getRankColor(entry.rank)"></ion-icon>
+        <div class="rank-text">
+          <strong>#{{ entry.rank }}</strong>
+          <span>{{ entry.points }} pts</span>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-card *ngIf="leaderboard.length === 0 && !isLoading">
+    <ion-card-content>
+      <div class="empty-state">
+        <ion-icon name="trophy-outline" color="medium"></ion-icon>
+        <p>No leaderboard data yet</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadLeaderboard()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content>

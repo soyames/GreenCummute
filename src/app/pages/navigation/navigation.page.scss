@@ -1,0 +1,160 @@
+.map-container {
+  width: 100%;
+  margin-bottom: 16px;
+  position: relative;
+  
+  #map-container {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.suggestions-list {
+  margin: 0;
+  padding: 0;
+  background: white;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 8px;
+  margin-top: -8px;
+  margin-bottom: 12px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 52px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    ion-icon {
+      margin-right: 12px;
+      font-size: 20px;
+    }
+
+    ion-label {
+      white-space: normal;
+      line-height: 1.4;
+      color: var(--ion-color-dark);
+      font-weight: 500;
+    }
+
+    &:hover {
+      --background: var(--ion-color-light);
+      background-color: var(--ion-color-light-tint);
+    }
+
+    &:active {
+      --background: var(--ion-color-light-shade);
+    }
+  }
+}
+
+.transport-modes {
+  margin: 16px 0;
+
+  h4 {
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .mode-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    ion-chip {
+      cursor: pointer;
+      margin: 0;
+      transition: all 0.2s ease;
+      
+      &:not([disabled]):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      ion-label {
+        font-weight: 500;
+        text-transform: capitalize;
+      }
+    }
+  }
+}
+
+.navigation-buttons {
+  margin-top: 16px;
+}
+
+.ml-2 {
+  margin-left: 8px;
+}
+
+// Navigation stats
+.stat-item {
+  text-align: center;
+  padding: 12px 0;
+
+  ion-icon {
+    font-size: 32px;
+    color: var(--ion-color-light);
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 8px 0 4px;
+    color: var(--ion-color-light);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--ion-color-light-shade);
+    text-transform: uppercase;
+  }
+}
+
+.nav-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    font-size: 24px;
+    margin-right: 12px;
+  }
+
+  span {
+    color: var(--ion-color-light);
+    font-weight: 500;
+  }
+}
+
+ion-badge {
+  margin-right: 4px;
+}
+
+// Make sure Leaflet controls are visible
+:host ::ng-deep {
+  .leaflet-control-zoom {
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+  }
+
+  .leaflet-bar a {
+    background-color: white;
+    color: #333;
+  }
+}

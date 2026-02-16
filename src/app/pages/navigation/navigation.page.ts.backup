@@ -1,0 +1,307 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule, ToastController, LoadingController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { MapService } from '../../services/map.service';
+import { RouteService } from '../../services/route.service';
+import { PointsService } from '../../services/points.service';
+import { AuthService } from '../../services/auth.service';
+import { Route, RouteOptions, RouteComparison, Location } from '../../models/route.model';
+import { TransportMode } from '../../models/user.model';
+import { DataDisclaimerComponent } from '../../components/data-disclaimer/data-disclaimer.component';
+
+@Component({
+  selector: 'app-navigation',
+  templateUrl: './navigation.page.html',
+  styleUrls: ['./navigation.page.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule, FormsModule, DataDisclaimerComponent]
+})
+export class NavigationPage implements OnInit {
+  originAddress = '';
+  destinationAddress = '';
+  selectedTransportModes: TransportMode[] = ['walk', 'bike', 'bus', 'train'];
+  optimizeFor: 'eco' | 'time' | 'balanced' = 'eco';
+  
+  routeComparison?: RouteComparison;
+  selectedRoute?: Route;
+  isCalculating = false;
+  isNavigating = false;
+  currentLocation?: Location;
+  
+  transportModeIcons: Record<TransportMode, string> = {
+    walk: 'walk',
+    bike: 'bicycle',
+    ebike: 'bicycle',
+    scooter: 'bicycle',
+    bus: 'bus',
+    train: 'train',
+    tram: 'train',
+    car: 'car',
+    carpool: 'car-sport'
+  };
+
+  constructor(
+    private mapService: MapService,
+    private routeService: RouteService,
+    private pointsService: PointsService,
+    private authService: AuthService,
+    private toastController: ToastController,
+    private loadingController: LoadingController,
+    private router: Router
+  ) {}
+
+  async ngOnInit() {
+    await this.initMap();
+    await this.getCurrentLocation();
+  }
+
+  async initMap() {
+    try {
+      // Map will be initialized by Leaflet directly in the template
+      console.log('Map container ready');
+    } catch (error) {
+      console.error('Error initializing map:', error);
+      this.showToast('Failed to initialize map', 'danger');
+    }
+  }
+
+  async getCurrentLocation() {
+    try {
+      const position = await this.mapService.getCurrentLocation();
+      this.currentLocation = {
+        latitude: position.lat,
+        longitude: position.lng
+      };
+      
+      const address = await this.mapService.reverseGeocode(
+        position.lat,
+        position.lng
+      );
+      this.originAddress = address;
+      
+      await this.mapService.addMarker(
+        'map',
+        position.lat,
+        position.lng,
+        {
+          title: 'Your Location',
+          color: 'primary',
+          popup: 'You are here'
+        }
+      );
+    } catch (error) {
+      console.error('Error getting location:', error);
+      this.showToast('Please enable location services', 'warning');
+    }
+  }
+
+  toggleTransportMode(mode: TransportMode) {
+    const index = this.selectedTransportModes.indexOf(mode);
+    if (index > -1) {
+      this.selectedTransportModes.splice(index, 1);
+    } else {
+      this.selectedTransportModes.push(mode);
+    }
+  }
+
+  isTransportModeSelected(mode: TransportMode): boolean {
+    return this.selectedTransportModes.includes(mode);
+  }
+
+  async calculateRoutes() {
+    if (!this.originAddress || !this.destinationAddress) {
+      this.showToast('Please enter origin and destination', 'warning');
+      return;
+    }
+
+    if (this.selectedTransportModes.length === 0) {
+      this.showToast('Please select at least one transport mode', 'warning');
+      return;
+    }
+
+    const loading = await this.loadingController.create({
+      message: 'Calculating eco-friendly routes...'
+    });
+    await loading.present();
+    this.isCalculating = true;
+
+    try {
+      const originCoords = this.currentLocation 
+        ? { lat: this.currentLocation.latitude, lng: this.currentLocation.longitude }
+        : await this.mapService.getCurrentLocation();
+      const destCoords = { lat: 48.2082, lng: 16.3738 }; // Mock destination
+
+      const origin: any = {
+        lat: originCoords.lat,
+        lng: originCoords.lng,
+        address: this.originAddress
+      };
+
+      const destination: any = {
+        lat: destCoords.lat,
+        lng: destCoords.lng,
+        address: this.destinationAddress
+      };
+
+      const preferences = {
+        ecoBalance: 80,
+        modes: this.selectedTransportModes,
+        maxWalkDistance: 2000
+      };
+
+      const routes = await this.routeService.calculateRoutes(origin as any, destination as any, preferences);
+      
+      if (routes && routes.length > 0) {
+        this.routeComparison = {
+          routes: routes as any,
+          recommendations: {
+            mostEco: routes[0] as any,
+            fastest: routes[routes.length - 1] as any || routes[0] as any,
+            balanced: routes[Math.floor(routes.length / 2)] as any || routes[0] as any
+          }
+        };
+        this.selectedRoute = routes[0] as any;
+        await this.displayRoute(this.selectedRoute);
+        this.showToast(`Found ${routes.length} routes`, 'success');
+      } else {
+        this.showToast('No routes found', 'warning');
+      }
+    } catch (error) {
+      console.error('Error calculating routes:', error);
+      this.showToast('Failed to calculate routes', 'danger');
+    } finally {
+      this.isCalculating = false;
+      await loading.dismiss();
+    }
+  }
+
+  async displayRoute(route: Route) {
+    try {
+      await this.mapService.clearMarkers('map');
+      await this.mapService.clearRoutes('map');
+      
+      await this.mapService.addMarker(
+        'map',
+        (route.origin as any).lat || route.origin.latitude,
+        (route.origin as any).lng || route.origin.longitude,
+        { title: 'Start', color: 'success', popup: route.origin.address || 'Origin' }
+      );
+      
+      await this.mapService.addMarker(
+        'map',
+        (route.destination as any).lat || route.destination.latitude,
+        (route.destination as any).lng || route.destination.longitude,
+        { title: 'Destination', color: 'danger', popup: route.destination.address || 'Destination' }
+      );
+      
+      const routeColor = (route.ecoScore >= 80) ? '#4CAF50' : (route.ecoScore >= 60) ? '#8BC34A' : '#FFC107';
+      await this.mapService.drawRoute('map', route, routeColor);
+    } catch (error) {
+      console.error('Error displaying route:', error);
+    }
+  }
+
+  async selectRoute(route: Route) {
+    this.selectedRoute = route;
+    await this.displayRoute(route);
+  }
+
+  async startNavigation() {
+    if (!this.selectedRoute) {
+      this.showToast('Please select a route', 'warning');
+      return;
+    }
+
+    this.isNavigating = true;
+    
+    try {
+      const user = await this.authService.getCurrentUser();
+      if (user) {
+        await this.routeService.saveRoute(this.selectedRoute as any, user.uid);
+        
+        await this.mapService.startWatchingLocation((location) => {
+          console.log('Tracking location:', location);
+        });
+        this.showToast('Navigation started! Points will be awarded upon completion.', 'success');
+      }
+    } catch (error) {
+      console.error('Error starting navigation:', error);
+      this.showToast('Failed to start navigation', 'danger');
+      this.isNavigating = false;
+    }
+  }
+
+  async endNavigation() {
+    if (!this.selectedRoute || !this.isNavigating) return;
+
+    const loading = await this.loadingController.create({
+      message: 'Completing route...'
+    });
+    await loading.present();
+
+    try {
+      const user = await this.authService.getCurrentUser();
+      if (user) {
+        await this.routeService.saveToHistory(this.selectedRoute, user.uid);
+        
+        const points = await this.pointsService.awardPointsForRoute(
+          user.uid,
+          this.selectedRoute
+        );
+        
+        await this.mapService.stopWatchingLocation();
+        this.isNavigating = false;
+        
+        this.showToast(
+          `Route completed! You earned ${points} points and saved ${this.selectedRoute.co2Saved}g CO2!`,
+          'success',
+          5000
+        );
+        
+        setTimeout(() => {
+          this.router.navigate(['/tabs/profile']);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error ending navigation:', error);
+      this.showToast('Failed to complete route', 'danger');
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  formatDistance(meters: number): string {
+    if (meters < 1000) {
+      return `${Math.round(meters)}m`;
+    }
+    return `${(meters / 1000).toFixed(1)}km`;
+  }
+
+  formatDuration(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  }
+
+  getEcoScoreColor(score: number): string {
+    if (score >= 80) return 'success';
+    if (score >= 60) return 'warning';
+    return 'danger';
+  }
+
+  async showToast(message: string, color: string = 'primary', duration: number = 2000) {
+    const toast = await this.toastController.create({
+      message,
+      duration,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
+}

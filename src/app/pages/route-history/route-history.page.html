@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Route History</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-segment [(ngModel)]="selectedSegment" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="all">
+      <ion-label>All Routes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="favorites">
+      <ion-icon name="star"></ion-icon>
+      <ion-label>Favorites</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list *ngIf="displayedRoutes.length > 0">
+    <ion-item-sliding *ngFor="let route of displayedRoutes">
+      <ion-item>
+        <ion-icon 
+          [name]="transportModeIcons[route.transportMode]" 
+          [color]="getEcoScoreColor(route.ecoScore)"
+          slot="start">
+        </ion-icon>
+        <ion-label>
+          <h2>{{ route.origin.address || 'Start' }} → {{ route.destination.address || 'End' }}</h2>
+          <p>
+            {{ formatDistance(route.distance) }} • {{ formatDuration(route.duration) }} • 
+            {{ route.transportMode | titlecase }}
+          </p>
+          <p>
+            <ion-badge [color]="getEcoScoreColor(route.ecoScore)">
+              Eco: {{ route.ecoScore }}/100
+            </ion-badge>
+            <ion-badge color="success">
+              +{{ route.pointsEarned }} pts
+            </ion-badge>
+            <ion-badge color="success">
+              -{{ route.co2Saved }}g CO₂
+            </ion-badge>
+          </p>
+          <p class="date-text">{{ route.createdAt | date:'short' }}</p>
+        </ion-label>
+        <ion-button 
+          slot="end" 
+          fill="clear"
+          (click)="toggleFavorite(route)">
+          <ion-icon 
+            [name]="route.favorite ? 'star' : 'star-outline'" 
+            [color]="route.favorite ? 'warning' : 'medium'">
+          </ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item-options side="start">
+        <ion-item-option color="primary" (click)="repeatRoute(route)">
+          <ion-icon name="repeat" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteRoute(route)">
+          <ion-icon name="trash" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-card *ngIf="displayedRoutes.length === 0 && !isLoading">
+    <ion-card-content>
+      <div class="empty-state">
+        <ion-icon name="map-outline" color="medium"></ion-icon>
+        <p *ngIf="selectedSegment === 'all'">No routes yet. Start navigating to see your history!</p>
+        <p *ngIf="selectedSegment === 'favorites'">No favorite routes yet. Star routes to save them here!</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadRoutes()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content>

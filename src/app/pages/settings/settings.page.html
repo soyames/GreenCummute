@@ -1,0 +1,139 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Route Preferences</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Default Route Type</ion-label>
+      <ion-select [(ngModel)]="preferences.routePreference" (ionChange)="savePreferences()">
+        <ion-select-option value="eco">Most Eco-Friendly</ion-select-option>
+        <ion-select-option value="balanced">Balanced</ion-select-option>
+        <ion-select-option value="fast">Fastest</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-list-header>
+      <ion-label>Notifications</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Route Updates</ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.notifications.routeUpdates"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Points Earned</ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.notifications.pointsEarned"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Achievements</ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.notifications.achievements"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Promotions</ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.notifications.promotions"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-list-header>
+      <ion-label>Privacy</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <h3>Share Location</h3>
+        <p>Allow location tracking for routes</p>
+      </ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.privacy.shareLocation"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <h3>Share Statistics</h3>
+        <p>Display stats on leaderboard</p>
+      </ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.privacy.shareStatistics"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <h3>Public Profile</h3>
+        <p>Make profile visible to others</p>
+      </ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.privacy.publicProfile"
+        (ionChange)="savePreferences()">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-list-header>
+      <ion-label>Appearance</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>Dark Mode</ion-label>
+      <ion-toggle 
+        [(ngModel)]="preferences.darkMode"
+        (ionChange)="onDarkModeToggle($event)">
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Language</ion-label>
+      <ion-select [(ngModel)]="preferences.language" (ionChange)="savePreferences()">
+        <ion-select-option *ngFor="let lang of languages" [value]="lang.code">
+          {{ lang.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-list-header>
+      <ion-label>Data</ion-label>
+    </ion-list-header>
+
+    <ion-item button (click)="clearCache()">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      <ion-label>
+        <h3>Clear Cache</h3>
+        <p>Remove locally stored data</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-list-header>
+      <ion-label>Account</ion-label>
+    </ion-list-header>
+
+    <ion-item button (click)="logout()">
+      <ion-icon name="log-out-outline" slot="start" color="danger"></ion-icon>
+      <ion-label color="danger">Logout</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <app-data-disclaimer [showFullDisclaimer]="true" position="bottom"></app-data-disclaimer>
+</ion-content>

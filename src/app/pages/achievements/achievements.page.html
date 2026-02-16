@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Achievements</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="progress-card">
+    <ion-card-content>
+      <div class="achievement-summary">
+        <div class="summary-icon">
+          <ion-icon name="trophy" color="warning"></ion-icon>
+        </div>
+        <div class="summary-text">
+          <h2>{{ unlockedAchievements.length }} / {{ achievements.length }}</h2>
+          <p>Achievements Unlocked</p>
+          <ion-progress-bar 
+            [value]="achievements.length > 0 ? unlockedAchievements.length / achievements.length : 0"
+            color="warning">
+          </ion-progress-bar>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-segment [(ngModel)]="selectedFilter" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="all">
+      <ion-label>All</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="unlocked">
+      <ion-label>Unlocked</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="locked">
+      <ion-label>Locked</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list>
+    <ion-item *ngFor="let achievement of displayedAchievements" [class.unlocked]="achievement.unlocked">
+      <ion-avatar slot="start" [class.unlocked-avatar]="achievement.unlocked">
+        <div class="achievement-icon">
+          <ion-icon 
+            [name]="achievement.icon" 
+            [color]="achievement.unlocked ? 'warning' : 'medium'">
+          </ion-icon>
+        </div>
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ achievement.name }}</h2>
+        <p>{{ achievement.description }}</p>
+        <div *ngIf="!achievement.unlocked && achievement.progress !== undefined" class="progress-section">
+          <ion-progress-bar 
+            [value]="getProgress(achievement) / 100"
+            color="primary">
+          </ion-progress-bar>
+          <p class="progress-text">
+            {{ achievement.progress }} / {{ achievement.requirement.value }} {{ achievement.requirement.type }}
+          </p>
+        </div>
+        <p *ngIf="achievement.unlocked && achievement.unlockedAt" class="unlocked-date">
+          Unlocked {{ achievement.unlockedAt | date:'short' }}
+        </p>
+      </ion-label>
+      <div slot="end" class="achievement-badge">
+        <ion-icon 
+          *ngIf="achievement.unlocked" 
+          name="checkmark-circle" 
+          color="success">
+        </ion-icon>
+        <ion-badge [color]="achievement.unlocked ? 'warning' : 'medium'">
+          {{ achievement.points }} pts
+        </ion-badge>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-card *ngIf="displayedAchievements.length === 0 && !isLoading">
+    <ion-card-content>
+      <div class="empty-state">
+        <ion-icon name="trophy-outline" color="medium"></ion-icon>
+        <p>No achievements to display</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-refresher slot="fixed" (ionRefresh)="loadAchievements()">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+</ion-content>

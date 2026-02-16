@@ -1,13 +1,15 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaulthref="registration" text=""></ion-back-button>
-
+      <ion-back-button defaulthref="login" text=""></ion-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bg-color">
+  <!-- Data Storage Disclaimer -->
+  <app-data-disclaimer [showFullDisclaimer]="true" position="top"></app-data-disclaimer>
+  
   <ion-card>
     <ion-card-header>
       <ion-card-title>
@@ -19,49 +21,70 @@
     </ion-card-header>
   </ion-card>
   <ion-card-content>
+    <form [formGroup]="registrationForm" (ngSubmit)="createUser()">
       <ion-list>
         <ion-item>
-          <ion-input id="firstName" label="First name: " type="text"></ion-input>
+          <ion-input formControlName="firstName" label="First name: " type="text" required></ion-input>
         </ion-item>
       
         <ion-item>
-          <ion-input id="lastName" label="Last name: " type="text"></ion-input>
+          <ion-input formControlName="lastName" label="Last name: " type="text" required></ion-input>
         </ion-item>
       
         <ion-item>
-          <ion-input id="city" label="City of residence: " type="text"></ion-input>
+          <ion-input formControlName="city" label="City of residence: " type="text"></ion-input>
         </ion-item>
       
         <ion-item>
-          <ion-input id="occupation" label="Occupation: " type="text"></ion-input>
+          <ion-input formControlName="occupation" label="Occupation: " type="text"></ion-input>
         </ion-item>
+        
         <ion-item>
-          <ion-input id="email" label="Email: " type="email"></ion-input>
+          <ion-input formControlName="email" label="Email: " type="email" required></ion-input>
         </ion-item>
+        
         <ion-item>
-          <ion-input id="phoneNumber" label="Phone number: " type="number"></ion-input>
+          <ion-input formControlName="phoneNumber" label="Phone number: " type="tel"></ion-input>
         </ion-item>
+        
         <ion-item>
-          <input id="profilePicture" label="Profile Picture:" type="file">
-          <!--<input label="Profile Picture:" type="file" (change)="handleFileInput($event)">-->
+          <ion-input formControlName="password" label="Password: " type="password" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-input formControlName="confirmPassword" label="Confirm Password: " type="password" required></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <input type="file" accept="image/*" (change)="handleFileInput($event)">
+          <ion-label>Profile Picture (optional)</ion-label>
         </ion-item>
       </ion-list>
       <div class="reg-btn">
-        <ion-button size="small" fill="solid" shape="round" class="regbtn" (click)="createUser()">Register</ion-button>
-      </div>
-      <div class="text-tag">
-        <span> or register with</span>
-      </div>
-      <div class="social-btns">
-        <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding">
-          <ion-img src="assets/images/facebook.png"></ion-img>
+        <ion-button 
+          type="submit" 
+          size="small" 
+          fill="solid" 
+          shape="round" 
+          class="regbtn"
+          [disabled]="registrationForm.invalid || isLoading">
+          Register
         </ion-button>
-          <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding">
-            <ion-img src="assets/images/google.png"></ion-img>
-          </ion-button>
-          <ion-button fill="clear" shape="round" class="applebtn ion-no-padding">
-            <ion-img src="assets/images/apple.png"></ion-img>
-          </ion-button>
-        </div>
+      </div>
+    </form>
+    <div class="text-tag">
+      <span> or register with</span>
+    </div>
+    <div class="social-btns">
+      <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="registerWithFacebook()">
+        <ion-img src="assets/images/facebook.png"></ion-img>
+      </ion-button>
+      <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="registerWithGoogle()">
+        <ion-img src="assets/images/google.png"></ion-img>
+      </ion-button>
+      <ion-button fill="clear" shape="round" class="applebtn ion-no-padding" (click)="registerWithApple()">
+        <ion-img src="assets/images/apple.png"></ion-img>
+      </ion-button>
+    </div>
   </ion-card-content>
 </ion-content>

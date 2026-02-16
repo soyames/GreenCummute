@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { initializeApp } from 'firebase/app';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +11,8 @@ import { IonicModule } from '@ionic/angular';
   imports: [IonicModule],
 })
 export class AppComponent {
-  constructor() {}
+  constructor() {
+    // Initialize Firebase
+    initializeApp(environment.firebase);
+  }
 }

@@ -1,0 +1,38 @@
+.partner-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .partner-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+}
+
+.offer-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+
+  .discount {
+    font-weight: bold;
+    color: var(--ion-color-success);
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+  }
+}

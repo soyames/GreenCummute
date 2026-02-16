@@ -11,8 +11,36 @@
     <ion-row>
       <ion-col size-md="6" size-lg="4" offset-md="3" offset-lg="4">
         <div class="profile-picture-container">
-          <img src="{{ profilePictureUrl }}" alt="Profile Picture">
+          <img [src]="profilePictureUrl || 'assets/images/default-avatar.png'" alt="Profile Picture">
+          <ion-button 
+            fill="solid" 
+            size="small" 
+            class="upload-btn"
+            (click)="fileInput.click()"
+            [disabled]="isLoading">
+            <ion-icon name="camera" slot="start"></ion-icon>
+            Change Photo
+          </ion-button>
+          <input 
+            #fileInput 
+            type="file" 
+            accept="image/*" 
+            (change)="handleFileInput($event)" 
+            style="display: none;">
         </div>
+        
+        <!-- Points Display -->
+        <ion-card class="points-card">
+          <ion-card-content>
+            <div class="points-display">
+              <ion-icon name="leaf-outline" color="success"></ion-icon>
+              <div class="points-text">
+                <h3>{{ points }}</h3>
+                <p>Eco Points</p>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
 
@@ -20,14 +48,14 @@
       <ion-col>
         <ion-item>
           <ion-label position="floating">First Name</ion-label>
-          <ion-input type="text" value="{{ firstName }}" readonly></ion-input>
+          <ion-input type="text" [(ngModel)]="firstName" readonly></ion-input>
         </ion-item>
       </ion-col>
 
       <ion-col>
         <ion-item>
           <ion-label position="floating">Last Name</ion-label>
-          <ion-input type="text" value="{{ lastName }}" readonly></ion-input>
+          <ion-input type="text" [(ngModel)]="lastName" readonly></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -36,14 +64,14 @@
       <ion-col>
         <ion-item>
           <ion-label position="floating">City</ion-label>
-          <ion-input type="text" value="{{ city }}" readonly></ion-input>
+          <ion-input type="text" [(ngModel)]="city" readonly></ion-input>
         </ion-item>
       </ion-col>
 
       <ion-col>
         <ion-item>
           <ion-label position="floating">Occupation</ion-label>
-          <ion-input type="text" value="{{ occupation }}" readonly></ion-input>
+          <ion-input type="text" [(ngModel)]="occupation" readonly></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -52,15 +80,22 @@
       <ion-col>
         <ion-item>
           <ion-label position="floating">Email</ion-label>
-          <ion-input type="email" value="{{ email }}" readonly></ion-input>
+          <ion-input type="email" [(ngModel)]="email" readonly></ion-input>
         </ion-item>
       </ion-col>
 
       <ion-col>
         <ion-item>
           <ion-label position="floating">Phone Number</ion-label>
-          <ion-input type="tel" value="{{ phoneNumber }}" readonly></ion-input>
+          <ion-input type="tel" [(ngModel)]="phoneNumber" readonly></ion-input>
         </ion-item>
+      </ion-col>
+    </ion-row>
+    
+    <!-- Local Storage Disclaimer -->
+    <ion-row>
+      <ion-col>
+        <app-data-disclaimer [showFullDisclaimer]="false" position="bottom"></app-data-disclaimer>
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -1,0 +1,83 @@
+.user-rank-card {
+  margin: 16px;
+  background: linear-gradient(135deg, var(--ion-color-primary), var(--ion-color-secondary));
+
+  .user-rank {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: white;
+
+    ion-avatar {
+      width: 60px;
+      height: 60px;
+      border: 3px solid white;
+    }
+
+    .rank-info {
+      flex: 1;
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .rank-details {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .rank-badge {
+          font-size: 18px;
+          font-weight: bold;
+          padding: 4px 12px;
+        }
+
+        .points {
+          font-size: 20px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.rank-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  .rank-text {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+
+    strong {
+      font-size: 18px;
+    }
+
+    span {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+  }
+}
