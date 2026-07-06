@@ -1,19 +1,47 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>Feeds</ion-title>
+    <ion-title>Community Feeds</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Feeds</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ecomove-content ion-padding">
+  <div class="feed-container">
+    <ion-card *ngFor="let transport of transports" class="feed-card">
+      <ion-card-content>
+        <div class="feed-header">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <div class="feed-userinfo">
+            <h3>{{ transport.name }}</h3>
+            <p>Shared a recent trip</p>
+          </div>
+        </div>
+        
+        <div class="feed-trip-details">
+          <div class="trip-point">
+            <ion-icon name="location-outline" color="primary"></ion-icon>
+            <span>{{ transport.departure }}</span>
+          </div>
+          <div class="trip-connector"></div>
+          <div class="trip-point">
+            <ion-icon name="flag-outline" color="success"></ion-icon>
+            <span>{{ transport.destination }}</span>
+          </div>
+        </div>
 
-  <ion-list>
-    <ion-item *ngFor="let transport of transports">
-      {{ transport.name }} - {{ transport.departure }} to {{ transport.destination }}
-    </ion-item>
-  </ion-list>
+        <div class="feed-actions">
+          <ion-button fill="clear" size="small">
+            <ion-icon name="heart-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" size="small">
+            <ion-icon name="chatbubble-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div *ngIf="!transports || transports.length === 0" class="empty-state">
+      <ion-icon name="people-outline" color="medium"></ion-icon>
+      <p>No community feeds yet. Start sharing your eco-friendly trips!</p>
+    </div>
+  </div>
 </ion-content>

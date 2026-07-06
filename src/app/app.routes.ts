@@ -75,19 +75,23 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'home',
+        redirectTo: 'navigation',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: 'home',
-    redirectTo: 'tabs/home',
+    redirectTo: 'tabs/navigation',
     pathMatch: 'full'
   },
   {
     path: 'profile',
     redirectTo: 'tabs/profile',
     pathMatch: 'full'
+  },  {
+    path: 'forgot-password',
+    loadComponent: () => import('./pages/forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
   }
+
 ];

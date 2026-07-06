@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { 
   getFirestore,
@@ -35,6 +34,8 @@ export interface Route {
   modes: RouteSegment[];
   points: number;
   createdAt: Date;
+  transportMode: string;
+  coordinates?: {lat: number, lng: number}[];
 }
 
 export interface RouteSegment {
@@ -67,11 +68,21 @@ export class RouteService {
     walk: 0
   };
 
+  private readonly OSRM_PROFILES: Record<string, string> = {
+    walk: 'walking',
+    bike: 'cycling',
+    ebike: 'cycling',
+    scooter: 'cycling',
+    car: 'driving',
+    bus: 'driving',
+    train: 'driving'
+  };
+
   constructor() {
     this.firestore = getFirestore();
   }
 
-  // Calculate route with multiple options
+  // Calculate route with real OSRM data
   async calculateRoutes(
     origin: Location,
     destination: Location,
@@ -81,47 +92,65 @@ export class RouteService {
       maxWalkDistance?: number;
     }
   ): Promise<Route[]> {
-    // This would integrate with Google Maps Directions API or similar
-    // For now, we'll create a mock implementation
-    
     const routes: Route[] = [];
-    const distance = this.calculateDistance(origin, destination);
+    
+    for (const mode of preferences.modes) {
+      const osrmProfile = this.OSRM_PROFILES[mode] || 'driving';
+      
+      try {
+        const url = `https://router.project-osrm.org/route/v1/${osrmProfile}/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?overview=full&geometries=geojson`;
+        
+        const response = await fetch(url);
+        const data: any = await response.json();
+        
+        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+          const routeData = data.routes[0];
+          
+          const distanceKm = routeData.distance / 1000;
+          const durationMins = routeData.duration / 60;
+          
+          // Calculate Eco Score based on mode
+          let ecoScore = 50;
+          if (mode === 'walk' || mode === 'bike') ecoScore = 100;
+          else if (mode === 'ebike' || mode === 'scooter') ecoScore = 90;
+          else if (mode === 'bus' || mode === 'train') ecoScore = 80;
+          else if (mode === 'car') ecoScore = 20;
 
-    // Generate different route options
-    const routeOptions = [
-      { modes: ['walk'], ecoScore: 100, timeFactor: 1.0 },
-      { modes: ['bike'], ecoScore: 98, timeFactor: 0.3 },
-      { modes: ['bus'], ecoScore: 85, timeFactor: 0.25 },
-      { modes: ['train'], ecoScore: 90, timeFactor: 0.2 },
-      { modes: ['walk', 'bus'], ecoScore: 82, timeFactor: 0.22 },
-      { modes: ['bike', 'train'], ecoScore: 88, timeFactor: 0.18 },
-    ];
+          const co2Emissions = this.calculateCO2(distanceKm, mode);
+          const carEmissions = this.calculateCO2(distanceKm, 'car');
+          const co2Saved = Math.max(0, carEmissions - co2Emissions);
 
-    for (const option of routeOptions) {
-      // Check if modes are available in preferences
-      const modesAvailable = option.modes.every(mode => 
-        preferences.modes.includes(mode)
-      );
+          // Convert GeoJSON coords to LatLng array
+          const coordinates = routeData.geometry.coordinates.map((coord: number[]) => ({
+            lat: coord[1],
+            lng: coord[0]
+          }));
 
-      if (!modesAvailable) continue;
-
-      const duration = distance * option.timeFactor * 60; // minutes
-      const co2Emissions = this.calculateCO2(distance, option.modes[0]);
-      const co2Saved = this.CO2_PER_KM.car * distance - co2Emissions;
-
-      routes.push({
-        id: this.generateRouteId(),
-        origin,
-        destination,
-        distance,
-        duration,
-        ecoScore: option.ecoScore,
-        co2Emissions,
-        co2Saved,
-        modes: this.generateSegments(origin, destination, option.modes, distance),
-        points: 0, // Will be calculated when route is completed
-        createdAt: new Date()
-      });
+          routes.push({
+            id: this.generateRouteId(),
+            origin,
+            destination,
+            distance: distanceKm * 1000, // keep as meters for format methods
+            duration: durationMins * 60, // keep as seconds
+            ecoScore,
+            co2Emissions,
+            co2Saved: Number(co2Saved.toFixed(2)),
+            transportMode: mode,
+            modes: [{
+              mode,
+              from: origin,
+              to: destination,
+              distance: distanceKm * 1000,
+              duration: durationMins * 60
+            }],
+            coordinates,
+            points: Math.round(co2Saved * 10), // Example points calculation
+            createdAt: new Date()
+          });
+        }
+      } catch (err) {
+        console.error(`Failed to fetch route for mode ${mode}`, err);
+      }
     }
 
     // Sort by eco-balance preference

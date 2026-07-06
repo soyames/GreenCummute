@@ -20,6 +20,7 @@ export interface Route {
   completed: boolean;
   favorite: boolean;
   createdAt: Date;
+  coordinates?: {lat: number, lng: number}[];
 }
 
 export interface Location {

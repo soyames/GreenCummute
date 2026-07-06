@@ -6,7 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="bg-color">
+<ion-content class="ecomove-content">
   <!-- Data Storage Disclaimer -->
   <app-data-disclaimer [showFullDisclaimer]="true" position="top"></app-data-disclaimer>
   
@@ -72,19 +72,5 @@
         </ion-button>
       </div>
     </form>
-    <div class="text-tag">
-      <span> or register with</span>
-    </div>
-    <div class="social-btns">
-      <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="registerWithFacebook()">
-        <ion-img src="assets/images/facebook.png"></ion-img>
-      </ion-button>
-      <ion-button fill="clear" shape="round" class="gglbtn ion-no-padding" (click)="registerWithGoogle()">
-        <ion-img src="assets/images/google.png"></ion-img>
-      </ion-button>
-      <ion-button fill="clear" shape="round" class="applebtn ion-no-padding" (click)="registerWithApple()">
-        <ion-img src="assets/images/apple.png"></ion-img>
-      </ion-button>
-    </div>
   </ion-card-content>
 </ion-content>

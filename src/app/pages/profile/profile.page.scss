@@ -1,0 +1,97 @@
+ion-content {
+  --ion-background-color: var(--ion-color-step-50, #1c1d21);
+}
+
+ion-toolbar {
+  --background: transparent;
+  --color: #ffffff;
+}
+
+ion-title {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.profile-picture-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+
+  img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--ion-color-primary, #00FF66);
+    margin-bottom: 15px;
+  }
+
+  .upload-btn {
+    --background: var(--ion-color-primary, #00FF66);
+    --color: #000000;
+    --border-radius: 20px;
+    font-weight: 600;
+  }
+}
+
+.points-card {
+  --background: #25272c;
+  box-shadow: none !important;
+  border-radius: 16px;
+  margin-bottom: 30px;
+
+  .points-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    ion-icon {
+      font-size: 40px;
+      color: var(--ion-color-primary, #00FF66);
+    }
+
+    .points-text {
+      text-align: center;
+      
+      h3 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+      
+      p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        color: #a0a0a0;
+      }
+    }
+  }
+}
+
+ion-item {
+  --background: #25272c;
+  --color: #ffffff;
+  --border-radius: 12px;
+  margin-bottom: 16px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+  --border-color: transparent;
+  
+  ion-label {
+    color: #a0a0a0 !important;
+  }
+  
+  ion-input {
+    color: #ffffff;
+  }
+}
+
+ion-item.item-has-focus {
+  --border-color: var(--ion-color-primary, #00FF66);
+  --border-width: 1px;
+  --border-style: solid;
+}

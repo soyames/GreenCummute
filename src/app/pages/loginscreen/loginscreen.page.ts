@@ -149,7 +149,7 @@ export class LoginscreenPage implements OnInit {
   }
 
   forgotPassword() {
-    this.router.navigateByUrl('forgotpwd');
+    this.router.navigateByUrl('forgot-password');
   }
 
   goToRegister() {

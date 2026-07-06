@@ -18,7 +18,7 @@ import * as L from 'leaflet';
   templateUrl: './navigation.page.html',
   styleUrls: ['./navigation.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, DataDisclaimerComponent]
+  imports: [IonicModule, CommonModule, FormsModule]
 })
 export class NavigationPage implements OnInit, AfterViewInit, OnDestroy {
   originAddress = '';
@@ -375,17 +375,25 @@ export class NavigationPage implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      const color = route.ecoScore >= 80 ? '#4CAF50' : (route.ecoScore >= 60 ? '#8BC34A' : '#FFC107');
+      const color = '#00FF66'; // Neon green for EcoMove aesthetic
       
-      const latlngs: [number, number][] = [
-        [originLat, originLng],
-        [destLat, destLng]
-      ];
+      let latlngs: [number, number][] = [];
+      
+      if (route.coordinates && route.coordinates.length > 0) {
+        latlngs = route.coordinates.map(c => [c.lat, c.lng]);
+      } else {
+        latlngs = [
+          [originLat, originLng],
+          [destLat, destLng]
+        ];
+      }
 
       const polyline = L.polyline(latlngs, {
         color: color,
-        weight: 4,
-        opacity: 0.7
+        weight: 6,
+        opacity: 0.9,
+        lineCap: 'round',
+        lineJoin: 'round'
       }).addTo(map);
 
       // Fit map to show entire route
@@ -402,20 +410,21 @@ export class NavigationPage implements OnInit, AfterViewInit, OnDestroy {
     await this.displayRoute(route);
   }
 
+  clearRoutes() {
+    this.routeComparison = undefined;
+    this.selectedRoute = undefined;
+    this.mapService.clearRoutes('map-container');
+    this.mapService.clearMarkers('map-container');
+    // We could re-add current location marker here
+  }
+
   isTransportModeSelected(mode: TransportMode): boolean {
     return this.selectedTransportModes.includes(mode);
   }
 
   toggleTransportMode(mode: TransportMode) {
-    const index = this.selectedTransportModes.indexOf(mode);
-    if (index > -1) {
-      // Don't allow removing all modes
-      if (this.selectedTransportModes.length > 1) {
-        this.selectedTransportModes.splice(index, 1);
-      }
-    } else {
-      this.selectedTransportModes.push(mode);
-    }
+    // Single selection for the UI
+    this.selectedTransportModes = [mode];
   }
 
   async startNavigation() {
@@ -580,20 +589,13 @@ export class NavigationPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formatDistance(meters: number): string {
-    if (meters < 1000) {
-      return `${Math.round(meters)}m`;
-    }
-    return `${(meters / 1000).toFixed(1)}km`;
+    const miles = meters / 1609.34;
+    return `${miles.toFixed(1)} miles`;
   }
 
   formatDuration(seconds: number): string {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
+    const minutes = Math.ceil(seconds / 60);
+    return `${minutes} mins`;
   }
 
   getEcoScoreColor(score: number): string {
@@ -624,5 +626,9 @@ export class NavigationPage implements OnInit, AfterViewInit, OnDestroy {
     } catch (error) {
       console.error('Error updating user stats:', error);
     }
+  }
+
+  goToSettings() {
+    this.router.navigate(['/tabs/settings']);
   }
 }

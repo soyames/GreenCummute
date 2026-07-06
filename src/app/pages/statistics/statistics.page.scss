@@ -1,3 +1,45 @@
+ion-content {
+  --ion-background-color: var(--ion-color-step-50, #1c1d21);
+}
+
+ion-toolbar {
+  --background: transparent;
+  --color: #ffffff;
+}
+
+ion-title {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+ion-segment {
+  margin: 10px 16px 20px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  
+  ion-segment-button {
+    --color: #a0a0a0;
+    --color-checked: #ffffff;
+    --indicator-color: var(--ion-color-primary, #00FF66);
+    font-weight: 600;
+  }
+}
+
+ion-card {
+  --background: #25272c;
+  box-shadow: none !important;
+  border-radius: 16px;
+  margin-bottom: 20px;
+
+  ion-card-header {
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+  }
+}
+
 .stats-overview {
   .stat-item {
     text-align: center;
@@ -7,17 +49,24 @@
       font-size: 32px;
       margin-bottom: 8px;
     }
+    
+    ion-icon[color="success"] { color: var(--ion-color-primary, #00FF66) !important; }
+    ion-icon[color="primary"] { color: #00d2ff !important; }
+    ion-icon[color="warning"] { color: #ffcc00 !important; }
+    ion-icon[color="tertiary"] { color: #ff00ff !important; }
 
     .stat-value {
       font-size: 24px;
-      font-weight: bold;
+      font-weight: 700;
+      color: #ffffff;
       margin-bottom: 4px;
     }
 
     .stat-label {
       font-size: 12px;
-      color: var(--ion-color-medium);
+      color: #a0a0a0;
       text-transform: uppercase;
+      font-weight: 600;
     }
   }
 }
@@ -26,12 +75,16 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 
   ion-icon {
     font-size: 32px;
     flex-shrink: 0;
   }
+  
+  ion-icon[color="success"] { color: var(--ion-color-primary, #00FF66) !important; }
+  ion-icon[color="danger"] { color: #ff4444 !important; }
+  ion-icon[color="primary"] { color: #00d2ff !important; }
 
   .impact-text {
     flex: 1;
@@ -40,12 +93,51 @@
       margin: 0 0 4px 0;
       font-size: 16px;
       font-weight: 600;
+      color: #ffffff;
     }
 
     p {
       margin: 0;
       font-size: 14px;
-      color: var(--ion-color-medium);
+      color: #a0a0a0;
+    }
+  }
+}
+
+ion-list {
+  background: transparent;
+
+  ion-item {
+    --background: transparent;
+    --border-color: #333;
+    --padding-start: 0;
+    color: #ffffff;
+
+    ion-icon {
+      color: var(--ion-color-primary, #00FF66);
+    }
+
+    ion-label {
+      h3 {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      p {
+        color: #a0a0a0;
+        margin-bottom: 8px;
+      }
+    }
+    
+    ion-note {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    ion-progress-bar {
+      --background: #111;
+      --progress-background: var(--ion-color-primary, #00FF66);
     }
   }
 }
@@ -61,25 +153,37 @@
     flex-direction: column;
     align-items: center;
     padding: 12px;
-    background: var(--ion-color-light);
-    border-radius: 8px;
+    background: #111;
+    border-radius: 12px;
     text-align: center;
     opacity: 0.4;
-    transition: opacity 0.3s;
+    transition: all 0.3s ease;
+    border: 1px solid #333;
 
     &.unlocked {
       opacity: 1;
-      background: var(--ion-color-warning-tint);
+      background: rgba(0, 255, 102, 0.1);
+      border-color: var(--ion-color-primary, #00FF66);
+      
+      ion-icon {
+        color: var(--ion-color-primary, #00FF66);
+      }
+      
+      .badge-label {
+        color: #ffffff;
+      }
     }
 
     ion-icon {
       font-size: 32px;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
+      color: #a0a0a0;
     }
 
     .badge-label {
-      font-size: 10px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
+      color: #a0a0a0;
     }
   }
 }
@@ -91,14 +195,15 @@
   ion-icon {
     font-size: 64px;
     margin-bottom: 16px;
+    color: #a0a0a0;
   }
 
   p {
-    color: var(--ion-color-medium);
+    color: #a0a0a0;
   }
 }
 
 .text-center {
   text-align: center;
-  color: var(--ion-color-medium);
+  color: #a0a0a0;
 }
